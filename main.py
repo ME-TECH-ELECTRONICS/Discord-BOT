@@ -6,10 +6,9 @@ import json
 import random
 import time
 from datetime import datetime
-from replit import db
+#from replit import db
 
-min = 1
-max = 6
+
 client = discord.Client()
 
 def get_quote():
@@ -28,9 +27,70 @@ async def on_message(message):
   if message.author == client.user:
     return
   if message.content.startswith('.bpin'):
-    await message.delete()
+    if message.author.guild_permissions.administrator:
+      
+      await message.delete()
+      embed = discord.Embed(
+        title=message.guild.name,
+        color=discord.Color.gold(),
+        timestamp=datetime.utcnow()
+      )
+      embed.set_author(
+        name=message.author.display_name,
+        icon_url=message.author.avatar_url
+      )
+      embed.set_footer(
+        text=client.user.name,
+        icon_url=client.user.avatar_url
+      )
+      embed.add_field(
+        name="Our BOT's...",
+        value="Official bot <@&825930442627743755> ,Type `.help` for commands list.\nOur Play bot <@&861272759677091851> ,Type `pls help` for command list.\nOur rank bot for chatting <@&872883107005624341> ,Type `!help` for commands list",
+        inline=True
+      ) 
+      await message.channel.send(embed=embed)
+    else:
+      await message.channel.send(":no_entry: You don't have the permissions to do that")
+  #----hello command for everone----#
+
+  if message.content.startswith('.hello'):
+    await message.channel.send(f'Welcome to {message.guild.name} CODM Clan Discord Server :wink:')
+  
+  #-----print all command-----#
+
+  if message.content.startswith('.help'):
+    helpembed = discord.Embed(
+      title = str("List of available commands"),
+      color = discord.Color.gold(),
+      timestamp = datetime.utcnow()
+    )
+    helpembed.set_author(
+      name = message.author.display_name,
+      icon_url=message.author.avatar_url
+    )
+    helpembed.set_footer(
+      text=client.user.name,
+      icon_url=client.user.avatar_url
+    )
+    helpembed.add_field(
+      name="General",
+      value="`.hello` -prints welcome message\n`.inspire` -show random quotes\n`.ping` -ping the bot\n`.name` -print the nameof bot\n`.roll` -roll the dice\n`.play` -play guess the number game",
+      inline=True
+    )
+    helpembed.add_field(
+      name="Admin",
+      value="`.say` -say something using bot",
+      inline=True
+    ) 
+    msg = await message.channel.send(embed=helpembed)
+    #await message.channel.send('You can communicate with me by typing\n .hello\n .inspire\n .ping \n .name \n .member \n .roll \n .play') 
+
+    #-----print random quotes-----#
+    
+  if message.content.startswith('.inspire'):
+    quote = get_quote()
     embed = discord.Embed(
-      title=str("Kerala^Kings"),
+      title=message.guild.name,
       color=discord.Color.gold(),
       timestamp=datetime.utcnow()
     )
@@ -43,26 +103,12 @@ async def on_message(message):
       icon_url=client.user.avatar_url
     )
     embed.add_field(
-      name="test subject",
-      value='this is a test :wink:',
+      name=".",
+      value=quote,
       inline=False
     ) 
     await message.channel.send(embed=embed)
-  #----hello command for everone----#
-
-  if message.content.startswith('.hello'):
-    await message.channel.send('Welcome to Kerala^Kings CODM Clan Discord Server :wink:')
-  
-  #-----print all command-----#
-
-  if message.content.startswith('.help'):
-    await message.channel.send('You can communicate with me by typing\n .hello\n .inspire\n .ping \n .name \n .member \n .roll \n .play') 
-
-    #-----print random quotes-----#
-    
-  if message.content.startswith('.inspire'):
-    quote = get_quote()
-    await message.channel.send(quote)
+    #await message.channel.send(quote)
   
   #------simple guessing game----#
   
@@ -77,11 +123,12 @@ async def on_message(message):
           await message.channel.send("Your guess is too high")
         elif int(guess.content) == num:
           await message.channel.send("You guessed the correct number!")
+          break
         elif int(guess.content) < num:
           await message.channel.send("Your gess is too low")
         count = count - 1
       else:
-        await message.channel.send(f"You lost! The number was {num} your guess was {guess.content}")
+        await message.channel.send(f"You lost! The number was {num} your guess was {i}")
         if i == 3:
           break
 
@@ -90,7 +137,7 @@ async def on_message(message):
   if message.content.startswith('.ping'):
     latency = client.latency
     pingembed = discord.Embed(
-      title = str("Kerala^Kings"),
+      title = message.guild.name,
       color = discord.Color.gold(),
       timestamp = datetime.utcnow()
     )
@@ -104,8 +151,8 @@ async def on_message(message):
     )
     pingembed.add_field(
       name="Latency",
-      value=f"Pong! ``{round (latency*1000)}ms``",
-      inline=False
+      value=f"Pong! `{round (latency*1000)}ms`",
+      inline=True
     ) 
     await message.channel.send(embed=pingembed)
 
@@ -114,13 +161,94 @@ async def on_message(message):
   if message.content.startswith('.name'):
     await message.channel.send('My name is Ghost :robot:') 
 
-  if message.content.startswith('.member'):
-    await message.channel.send('MELVIN3152#1085\nelectronymous#7750\nNeville#9182\nRhishabh(EP)#8300\nshaiju#1573')
+  #-----roll dice -----
   if message.content.startswith('.roll'):
-    await message.channel.send('Rolling the dice...:game_die:')
-    x = random.randint(min, max)
+    rollembed = discord.Embed(
+      title = message.guild.name,
+      color = discord.Color.gold(),
+      timestamp = datetime.utcnow()
+    )
+    rollembed.set_author(
+      name = message.author.display_name,
+      icon_url=message.author.avatar_url
+    )
+    rollembed.set_footer(
+      text=client.user.name,
+      icon_url=client.user.avatar_url
+    )
+    rollembed.add_field(
+      name="Dice roll",
+      value="Rolling the dice...:game_die:",
+      inline=False
+    ) 
+    msg = await message.channel.send(embed=rollembed)
+    x = random.randint(1, 6)
     time.sleep(2)
-    await message.channel.send(x)   
+    if x==1:
+     (y)=":one:"
+    elif x==2:
+      (y)=":two:"
+    elif x==3:
+      (y)=":three:"
+    elif x==4:
+     (y)=":four:"
+    elif x==5:
+      (y)=":five:"
+    else:
+      (y)=":six:"
+      
+    embed = discord.Embed(
+      title=message.guild.name,
+      color=discord.Color.gold(),
+      timestamp=datetime.utcnow()
+    )
+    embed.set_author(
+      name=message.author.display_name,
+      icon_url=message.author.avatar_url
+    )
+    embed.set_footer(
+      text=client.user.name,
+      icon_url=client.user.avatar_url
+    )
+    embed.add_field(
+      name="Dice roll results",
+      value=f"{y}",
+      inline=True
+    )
+    await msg.edit(embed=embed)
+  #say somthing using bot
+  if message.content.startswith('.say'):
+    command = message.content.strip(".say").split(" ")
+    if message.author.guild_permissions.administrator:
+      await message.delete()
+      text = str(" ".join(command))
+      sayembed = discord.Embed(
+        title = message.guild.name,
+        color = discord.Color.gold(),
+        timestamp = datetime.utcnow()
+      )
+      sayembed.set_author(
+        name = message.author.display_name,
+        icon_url=message.author.avatar_url
+      )
+      sayembed.set_footer(
+        text=client.user.name,
+        icon_url=client.user.avatar_url
+      )
+      sayembed.add_field(
+        name="Bot says...",
+        value=text,
+        inline=False
+      ) 
+      await message.channel.send(embed=sayembed)
+    else:
+      await message.delete()
+      await message.channel.send(
+                    ":no_entry: You dont't have the permission to do that!")
+      await message.delete()
 
+     
+  if message.content.startswith('Pls rob'):
+    await message.channel.send('This command is disabled fools')
 keep_alive()
 client.run(os.getenv("TOKEN"))
