@@ -3,11 +3,13 @@ import os
 import requests
 import json
 import random
-import time
+from time import sleep
 from datetime import datetime
 
-TOKEN = os.environ['TOKEN']
+TOKEN_GHOST = os.environ['TOKEN']
+TOKEN_STATS = os.environ['TOKEN1']
 client = discord.Client()
+client1 = discord.Client()
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -19,6 +21,10 @@ def get_quote():
 async def on_ready():
   print('I am logged in as {0.user}'.format(client))
  
+@client1.event
+async def on_ready():
+    print('I am logged in as {0.user}'.format(client))
+
 @client.event
 async def on_message(message):
 
@@ -248,4 +254,64 @@ async def on_message(message):
      
   if message.content.startswith('Pls rob'):
     await message.channel.send('This command is disabled fools')
-client.run(TOKEN)
+
+@client1.event
+async def on_message(msg):
+    args = msg.content.split(" ")
+    cmd = args[0]
+    Channel = client.get_channel(919272383213367337)
+    if msg.author == client.user:
+        return
+    if cmd == "!clear":
+        await msg.channel.send(f'Clearing {args[1]} messages..')
+        sleep(2)
+        await msg.channel.purge(limit=int(args[1]))
+    if cmd == "!ip":
+        await msg.delete()
+        sleep(2)
+        embed = discord.Embed(
+            title=msg.guild.name,
+            color=discord.Color.gold(),
+            timestamp=datetime.utcnow()
+        )
+        embed.set_footer(
+            text=client.user.name,
+            icon_url=client.user.avatar_url
+        )
+
+        embed.add_field(
+            name='**@everyone**',
+            value="Creating new ngrok tunnel and requesting for  IP pls wait....",
+            inline=True
+        )
+        await Channel.send(embed=embed)
+        await Channel.send("@everyone")
+        res = r.get(url)
+        await Channel.send("```" + res.text + "```")
+
+    if "Server has started" in  msg.content:
+        embed = discord.Embed(
+            title=msg.guild.name,
+            color=discord.Color.gold(),
+            timestamp=datetime.utcnow()
+        )
+        embed.set_footer(
+            text=client.user.name,
+            icon_url=client.user.avatar_url
+        )
+
+        embed.add_field(
+            name='**@everyone**',
+            value="Creating new ngrok tunnel and requesting for  IP pls wait....",
+            inline=True
+        )
+        await Channel.send(embed=embed)
+        await Channel.send("@everyone")
+        res = requests.get(url)
+        await Channel.send("```" + res.text + "```")
+    if "Server has stopped" in msg.content:
+        await Channel.send("Destroying Tunnel...")
+        await Channel.purge(limit=10)
+
+client.run(TOKEN_GHOST)
+client1.run(TOKEN_STATS)
